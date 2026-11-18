@@ -216,6 +216,7 @@ dialog.situation-story #panel-title{position:absolute;width:1px;height:1px;overf
 .review-tile {display:flex;flex-direction:column;align-items:stretch;gap:.45rem;min-width:0}
 .review-tile .review-card {flex:1}
 .review-speaker {align-self:center;min-width:44px;min-height:44px}
+.review-closing {margin:0 auto;max-width:64ch;color:var(--muted);font-size:1rem;line-height:1.5;text-align:center}
 .case-response {border:1px solid currentColor;border-radius:.85rem;padding:.75rem 1rem;margin-top:1.25rem}
 .case-response summary {cursor:pointer;font-weight:750;padding:.4rem 0}
 .story-controls {flex-wrap:wrap}
@@ -665,6 +666,7 @@ function go(index, focus = true) {
       cards.append(tile);
     });
     copy.append(cards);
+    copy.append(element('p', 'review-closing', 'Para cerrar, pide a tu alumnado que reformule una de las frases con sus propias palabras.'));
   } else if (slide.expandable) {
     const cards = element('div','actions key-cards');
     slide.buttons.forEach(([label, explanation]) => {

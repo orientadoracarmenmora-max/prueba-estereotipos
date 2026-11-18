@@ -188,6 +188,10 @@ dialog.situation-story #panel-title{position:absolute;width:1px;height:1px;overf
 .review-answer{font-size:clamp(1rem,1.45vw,1.23rem);line-height:1.5;text-align:start}
 .review-back{background:#f4dce0;border:1px solid var(--line)}
 .review-face .portrait{display:block;align-self:end;width:100%;height:auto;aspect-ratio:3/4;object-fit:contain;border-radius:0}
+.review-front{grid-template-rows:minmax(min-content,1fr) minmax(0,3fr);gap:0}
+.review-front strong{align-self:start;padding-bottom:.55rem}
+.review-front .portrait{align-self:stretch;height:100%;min-height:0;aspect-ratio:auto;object-fit:cover;object-position:center top;mask-image:linear-gradient(to bottom,transparent,#000 3%)}
+[data-contrast]:not([data-contrast=""]) .review-front .portrait{mask-image:none}
 .review-flip{position:absolute;right:.48rem;bottom:.48rem;display:grid;place-items:center;width:2.1rem;height:2.1rem;border-radius:50%;background:#493128;color:#fff;font-size:1.35rem}
 @media(max-width:850px){.review-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:350px){.review-cards{grid-template-columns:1fr}}
@@ -216,13 +220,9 @@ dialog.situation-story #panel-title{position:absolute;width:1px;height:1px;overf
 .review-tile {display:flex;flex-direction:column;align-items:stretch;gap:.45rem;min-width:0}
 .review-tile .review-card {flex:1}
 .review-speaker {align-self:center;min-width:44px;min-height:44px}
-.review-closing {margin-inline-start:auto;width:fit-content;max-width:min(100%,42rem);text-align:start}
-.review-closing summary {display:flex;align-items:center;gap:.5rem;justify-content:end;min-height:44px;cursor:pointer;color:var(--ink);font-weight:650;list-style:none}
-.review-closing summary::-webkit-details-marker {display:none}
-.review-closing .classroom-toggle {display:grid;place-items:center;width:1.65em;height:1.65em;border-radius:50%;background:var(--accent);color:var(--ink);border:1px solid var(--line);font-size:1.2em}
-.review-closing .close-symbol,.review-closing[open] .open-symbol {display:none}
-.review-closing[open] .close-symbol {display:inline}
-.review-closing .classroom-guide {margin:.55rem 0 0;padding:.75rem 1rem;background:var(--paper);border:1px solid var(--line);border-radius:.75rem;line-height:1.5}
+.review-closing {display:flex;align-items:center;gap:.5rem;margin-inline-start:auto;min-height:44px;cursor:pointer;color:var(--ink);font-weight:650}
+.classroom-toggle {display:grid;place-items:center;width:1.65em;height:1.65em;border-radius:50%;background:var(--accent);color:var(--ink);border:1px solid var(--line);font-size:1.2em}
+.classroom-guide {line-height:1.5}
 .classroom-guide p {margin:0}
 .classroom-guide p+p {margin-top:.65rem}
 .case-response {border:1px solid currentColor;border-radius:.85rem;padding:.75rem 1rem;margin-top:1.25rem}
@@ -674,12 +674,14 @@ function go(index, focus = true) {
       cards.append(tile);
     });
     copy.append(cards);
-    const classroom = element('details', 'review-closing');
-    const label = element('summary', null, 'Propuesta para el aula');
-    const symbol = element('span', 'classroom-toggle');
+    const classroom = button('Propuesta para el aula', 'review-closing', event => {
+      openPanel('Propuesta para el aula', 'reveal', event.currentTarget);
+      panelBody.append(guidance);
+    });
+    classroom.setAttribute('aria-haspopup', 'dialog');
+    const symbol = element('span', 'classroom-toggle', '+');
     symbol.setAttribute('aria-hidden', 'true');
-    symbol.append(element('span', 'open-symbol', '+'), element('span', 'close-symbol', '−'));
-    label.prepend(symbol);
+    classroom.prepend(symbol);
     const guidance = element('div', 'classroom-guide');
     const before = element('p');
     before.append(
@@ -696,7 +698,6 @@ function go(index, focus = true) {
       ', teniendo en cuenta lo que acabáis de comentar.'
     );
     guidance.append(before, after);
-    classroom.append(label, guidance);
     copy.append(classroom);
   } else if (slide.expandable) {
     const cards = element('div','actions key-cards');

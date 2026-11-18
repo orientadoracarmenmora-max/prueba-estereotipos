@@ -216,7 +216,14 @@ dialog.situation-story #panel-title{position:absolute;width:1px;height:1px;overf
 .review-tile {display:flex;flex-direction:column;align-items:stretch;gap:.45rem;min-width:0}
 .review-tile .review-card {flex:1}
 .review-speaker {align-self:center;min-width:44px;min-height:44px}
-.review-closing {margin:0 auto;max-width:64ch;color:var(--muted);font-size:1rem;line-height:1.5;text-align:center}
+.review-closing {margin-inline-start:auto;width:fit-content;max-width:min(100%,42rem);text-align:start}
+.review-closing summary {display:flex;align-items:center;gap:.5rem;justify-content:end;min-height:44px;cursor:pointer;color:var(--ink);font-weight:650;list-style:none}
+.review-closing summary::-webkit-details-marker {display:none}
+.review-closing .classroom-toggle {display:grid;place-items:center;width:1.65em;height:1.65em;border-radius:50%;background:var(--accent);color:var(--ink);border:1px solid var(--line);font-size:1.2em}
+.review-closing .close-symbol,.review-closing[open] .open-symbol {display:none}
+.review-closing[open] .close-symbol {display:inline}
+.review-closing ol {margin:.55rem 0 0;padding:.75rem 1rem .75rem 2.4rem;background:var(--paper);border:1px solid var(--line);border-radius:.75rem;line-height:1.5}
+.review-closing li+li {margin-top:.5rem}
 .case-response {border:1px solid currentColor;border-radius:.85rem;padding:.75rem 1rem;margin-top:1.25rem}
 .case-response summary {cursor:pointer;font-weight:750;padding:.4rem 0}
 .story-controls {flex-wrap:wrap}
@@ -666,7 +673,24 @@ function go(index, focus = true) {
       cards.append(tile);
     });
     copy.append(cards);
-    copy.append(element('p', 'review-closing', 'Para cerrar, pide a tu alumnado que reformule una de las frases con sus propias palabras.'));
+    const classroom = element('details', 'review-closing');
+    const label = element('summary', null, 'Propuestas para el aula');
+    const symbol = element('span', 'classroom-toggle');
+    symbol.setAttribute('aria-hidden', 'true');
+    symbol.append(element('span', 'open-symbol', '+'), element('span', 'close-symbol', '−'));
+    label.prepend(symbol);
+    const proposals = element('ol');
+    for (const [title, instruction] of [
+      ['Reformular la frase', 'En parejas, elegid una tarjeta y reescribid la frase con vuestras palabras, sin dar por hecho cómo es o cómo se siente otra persona.'],
+      ['Distinguir lo que vemos de lo que suponemos', 'En la tarjeta de la risa, escribid qué sabemos al ver la escena y qué tendríamos que preguntar para saber cómo se ha sentido la persona.'],
+      ['Ensayar una intervención', 'Imaginad que alguien usa una de estas frases para burlarse de otra persona. Preparad una frase breve para frenar la burla y otra para ofrecerle apoyo en privado.']
+    ]) {
+      const item = element('li');
+      item.append(element('strong', null, title + '. '), instruction);
+      proposals.append(item);
+    }
+    classroom.append(label, proposals);
+    copy.append(classroom);
   } else if (slide.expandable) {
     const cards = element('div','actions key-cards');
     slide.buttons.forEach(([label, explanation]) => {
